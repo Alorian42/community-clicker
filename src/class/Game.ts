@@ -1,6 +1,7 @@
 import { usePlayerStore } from '../stores/player';
 import { useGameStore } from '../stores/game';
 import { Save } from './Save';
+import { BuildingUtils } from './BuildingUtils';
 
 export const LOCAL_STORAGE_KEY = 'gameData';
 
@@ -27,6 +28,17 @@ export class Game {
 
 			if (loadedData.playerName !== undefined) {
 				this.playerStore.setName(loadedData.playerName);
+			}
+
+			if (loadedData.buildings) {
+				loadedData.buildings.forEach((buildingData: any) => {
+					const building = BuildingUtils.getAllBuildings().find(
+						(b) => b.getId() === buildingData.id,
+					);
+					if (building) {
+						building.setLevel(buildingData.level);
+					}
+				});
 			}
 		}
 	}
@@ -67,6 +79,11 @@ export class Game {
 	};
 
 	private update(delta: number): void {
+		this.autoSave(delta);
+		this.buildingsStep(delta);
+	}
+
+	private autoSave(delta: number): void {
 		// Auto save logic
 		this.sinceLastSave += delta;
 		if (this.sinceLastSave >= this.saveInterval) {
@@ -74,8 +91,23 @@ export class Game {
 		}
 	}
 
+	private buildingsStep(delta: number): void {
+		// Iterate through all buildings and apply their production scaled by delta time
+		BuildingUtils.getAllBuildings().forEach((building) => {
+			const productionPerSecond = BuildingUtils.getCurrentProduction(building);
+			const production = productionPerSecond * (delta / 1000);
+			this.gameStore.incrementCurrency(production);
+		});
+	}
+
 	public saveGame(): void {
+		const buildings = BuildingUtils.getAllBuildings().map((building) => ({
+			id: building.getId(),
+			level: building.getLevel(),
+		}));
+
 		const toSave = {
+			buildings: buildings,
 			currency: this.gameStore.currency,
 			playerName: this.playerStore.name,
 		};

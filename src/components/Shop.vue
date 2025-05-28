@@ -4,9 +4,9 @@
 		<div class="shop-items">
 			<!-- Shop items will be rendered here -->
 			<!-- Example item: -->
-			<div class="shop-item" v-for="item in 200" :key="item">
-				<span>{{ item }}</span>
-				<button @click="">Buy</button>
+			<div class="shop-item" v-for="item in buildings" :key="item.name">
+				<span>{{ item.name }}</span>
+				<button @click="buy(item)">Buy</button>
 			</div>
 		</div>
 	</div>
@@ -15,9 +15,15 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useGameStore } from '../stores/game'; // Adjust the path if needed
+import { useShopStore } from '../stores/shop';
 
 const gameStore = useGameStore();
-const currency = computed(() => gameStore.currency);
+const currency = computed(() => gameStore.currency.toFixed(0));
+const { buildings } = useShopStore();
+
+const buy = (item: (typeof buildings)[0]) => {
+	gameStore.buyBuilding(item.building);
+};
 </script>
 
 <style scoped>
