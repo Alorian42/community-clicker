@@ -18,9 +18,16 @@ export const useGameStore = defineStore('game', () => {
 		}
 	};
 
+	const saveGame = () => {
+		if (game.value) {
+			game.value.saveGame();
+		}
+	};
+
 	return {
 		currency,
 		init,
 		incrementCurrency,
+		saveGame,
 	};
 });

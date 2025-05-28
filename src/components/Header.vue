@@ -1,14 +1,19 @@
 <template>
 	<div class="header">
 		<h1>Community Clicker</h1>
-		<h2>{{ name }}</h2>
+		<div>
+			<button @click="saveGame">Save</button>
+			<h2>{{ name }}</h2>
+		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
+import { useGameStore } from '../stores/game';
 import { usePlayerStore } from '../stores/player';
 
 const { name } = usePlayerStore();
+const { saveGame } = useGameStore();
 </script>
 <style scoped>
 .header {
