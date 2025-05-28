@@ -6,7 +6,15 @@
 </template>
 
 <script setup lang="ts">
+import { onBeforeMount } from 'vue';
 import Header from './components/Header.vue';
+import { Game } from './class/Game';
+
+onBeforeMount(() => {
+	const game = new Game();
+
+	game.start();
+});
 </script>
 <style>
 html,
@@ -25,7 +33,6 @@ body,
 
 .container {
 	flex: 1;
-	padding: 2rem;
 	background: #f5f6fa;
 	min-height: 0;
 }
