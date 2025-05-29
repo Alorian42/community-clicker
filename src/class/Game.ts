@@ -2,6 +2,7 @@ import { usePlayerStore } from '../stores/player';
 import { useGameStore } from '../stores/game';
 import { Save } from './Save';
 import { BuildingUtils } from './BuildingUtils';
+import { UpgradeUtils } from './UpgradeUtils';
 
 export const LOCAL_STORAGE_KEY = 'gameData';
 
@@ -37,6 +38,15 @@ export class Game {
 					);
 					if (building) {
 						building.setLevel(buildingData.level);
+					}
+				});
+			}
+
+			if (loadedData.upgrades) {
+				loadedData.upgrades.forEach((upgradeData: any) => {
+					const upgrade = UpgradeUtils.getUpgradeById(upgradeData.id);
+					if (upgrade) {
+						upgrade.setOwned(true);
 					}
 				});
 			}
@@ -128,9 +138,13 @@ export class Game {
 			id: building.getId(),
 			level: building.getLevel(),
 		}));
+		const upgrades = UpgradeUtils.getOwnedUpgrades().map((upgrade) => ({
+			id: upgrade.getId(),
+		}));
 
 		const toSave = {
 			buildings: buildings,
+			upgrades: upgrades,
 			currency: this.gameStore.currency,
 			playerName: this.playerStore.name,
 		};

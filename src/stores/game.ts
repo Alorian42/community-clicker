@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import type { Game } from '../class/Game';
 import type { Building } from '../class/Building/Building';
 import { BuildingUtils } from '../class/BuildingUtils';
+import type { Upgrade } from '@/class/Upgrade/Upgrade';
 
 export const useGameStore = defineStore('game', () => {
 	const currency = ref(0);
@@ -42,6 +43,17 @@ export const useGameStore = defineStore('game', () => {
 		}
 	};
 
+	const buyUpgrade = (upgrade: Upgrade) => {
+		if (game.value?.isRunning) {
+			if (upgrade.canBeBought() && currency.value >= upgrade.getCost()) {
+				currency.value -= upgrade.getCost();
+				upgrade.buy();
+			} else {
+				console.warn(`Cannot buy upgrade: ${upgrade.getName()}`);
+			}
+		}
+	};
+
 	const saveGame = () => {
 		if (game.value) {
 			game.value.saveGame();
@@ -56,5 +68,6 @@ export const useGameStore = defineStore('game', () => {
 		incrementCurrency,
 		saveGame,
 		buyBuilding,
+		buyUpgrade,
 	};
 });

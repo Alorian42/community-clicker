@@ -1,6 +1,7 @@
 import type { Building } from './Building/Building';
 import { miningCart } from './Building/MiningCart';
 import { pickaxe } from './Building/Pickaxe';
+import { UpgradeUtils } from './UpgradeUtils';
 
 export interface BuildingsDetails {
 	name: string;
@@ -21,6 +22,12 @@ export class BuildingUtils {
 		);
 	}
 
+	public static getBuildingById(id: string): Building | undefined {
+		return BuildingUtils.getAllBuildings().find(
+			(building) => building.getId() === id,
+		);
+	}
+
 	public static getNextBuildingCost(building: Building): number {
 		const level = building.getLevel();
 		const baseCost = building.getBaseCost();
@@ -31,10 +38,17 @@ export class BuildingUtils {
 	public static getCurrentProduction(building: Building): number {
 		const level = building.getLevel();
 		const baseProduction = building.getBaseProduction();
+		let bonus = 1;
+
+		// Applying production bonus from upgrades
+		UpgradeUtils.getOwnedUpgrades().forEach((upgrade) => {
+			const upgradeBonus = upgrade.applyProductionBonus(building);
+			bonus += upgradeBonus - 1; // Adjust bonus to be additive
+		});
 
 		// @TODO apply modifiers from other sources (e.g., upgrades, bonuses)
 
-		return level * baseProduction;
+		return level * baseProduction * bonus;
 	}
 }
 
