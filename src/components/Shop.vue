@@ -7,26 +7,47 @@
 		<div class="shop-items">
 			<!-- Shop items will be rendered here -->
 			<!-- Example item: -->
-			<div class="shop-item" v-for="item in buildings" :key="item.name">
+			<div class="shop-item" v-for="item in state.buildings" :key="item.name">
 				<span>{{ item.name }}</span>
-				<button @click="buy(item)">Buy</button>
+				<span>Cost: {{ item.cost.toFixed(0) }}</span>
+				<span>Income: {{ item.production.toFixed(0) }}</span>
+				<button @click="buy(item as any)">Buy</button>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useGameStore } from '../stores/game'; // Adjust the path if needed
-import { useShopStore } from '../stores/shop';
+import { computed, onMounted, reactive } from 'vue';
+import { useGameStore } from '../stores/game';
+import { BuildingUtils, type BuildingsDetails } from '../class/BuildingUtils';
 
 const gameStore = useGameStore();
 const currency = computed(() => gameStore.currency.toFixed(0));
 const income = computed(() => gameStore.income.toFixed(0));
-const { buildings } = useShopStore();
+const state = reactive<{
+	buildings: BuildingsDetails[];
+}>({
+	buildings: [],
+});
 
-const buy = (item: (typeof buildings)[0]) => {
+const generateBuildings = () => {
+	state.buildings = BuildingUtils.getAllBuildings().map((building) => ({
+		name: building.getName(),
+		level: building.getLevel(),
+		cost: BuildingUtils.getNextBuildingCost(building),
+		production: BuildingUtils.getCurrentProduction(building),
+		building: building,
+	}));
+};
+
+onMounted(() => {
+	generateBuildings();
+});
+
+const buy = (item: BuildingsDetails) => {
 	gameStore.buyBuilding(item.building);
+	generateBuildings();
 };
 </script>
 

@@ -2,6 +2,14 @@ import type { Building } from './Building/Building';
 import { miningCart } from './Building/MiningCart';
 import { pickaxe } from './Building/Pickaxe';
 
+export interface BuildingsDetails {
+	name: string;
+	level: number;
+	cost: number;
+	production: number;
+	building: Building;
+}
+
 export class BuildingUtils {
 	public static getAllBuildings(): Building[] {
 		return [pickaxe, miningCart];

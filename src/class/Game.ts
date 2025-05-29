@@ -47,6 +47,10 @@ export class Game {
 		return this.running;
 	}
 
+	public init(): void {
+		this.saveVisibleIncome();
+	}
+
 	public start(): void {
 		if (!this.running) {
 			this.running = true;
@@ -54,6 +58,7 @@ export class Game {
 
 			console.log('Game started');
 
+			this.init();
 			this.gameLoop();
 		}
 	}
@@ -81,6 +86,7 @@ export class Game {
 	private update(delta: number): void {
 		this.autoSave(delta);
 		this.buildingsStep(delta);
+		this.saveVisibleIncome();
 	}
 
 	private autoSave(delta: number): void {
@@ -104,6 +110,16 @@ export class Game {
 		);
 
 		this.gameStore.incrementCurrency(totalProduction);
+	}
+
+	private saveVisibleIncome(): void {
+		const totalProduction = BuildingUtils.getActiveBuildings().reduce(
+			(sum, building) => {
+				return sum + BuildingUtils.getCurrentProduction(building);
+			},
+			0,
+		);
+
 		this.gameStore.setIncome(totalProduction);
 	}
 
