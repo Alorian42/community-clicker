@@ -93,15 +93,22 @@ export class Game {
 
 	private buildingsStep(delta: number): void {
 		// Iterate through all buildings and apply their production scaled by delta time
-		BuildingUtils.getAllBuildings().forEach((building) => {
-			const productionPerSecond = BuildingUtils.getCurrentProduction(building);
-			const production = productionPerSecond * (delta / 1000);
-			this.gameStore.incrementCurrency(production);
-		});
+		const totalProduction = BuildingUtils.getActiveBuildings().reduce(
+			(sum, building) => {
+				const productionPerSecond =
+					BuildingUtils.getCurrentProduction(building);
+				const production = productionPerSecond * (delta / 1000);
+				return sum + production;
+			},
+			0,
+		);
+
+		this.gameStore.incrementCurrency(totalProduction);
+		this.gameStore.setIncome(totalProduction);
 	}
 
 	public saveGame(): void {
-		const buildings = BuildingUtils.getAllBuildings().map((building) => ({
+		const buildings = BuildingUtils.getActiveBuildings().map((building) => ({
 			id: building.getId(),
 			level: building.getLevel(),
 		}));

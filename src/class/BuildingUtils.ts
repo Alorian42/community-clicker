@@ -7,6 +7,12 @@ export class BuildingUtils {
 		return [pickaxe, miningCart];
 	}
 
+	public static getActiveBuildings(): Building[] {
+		return BuildingUtils.getAllBuildings().filter(
+			(building) => building.getLevel() > 0,
+		);
+	}
+
 	public static getNextBuildingCost(building: Building): number {
 		const level = building.getLevel();
 		const baseCost = building.getBaseCost();

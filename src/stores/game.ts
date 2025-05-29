@@ -6,6 +6,7 @@ import { BuildingUtils } from '../class/BuildingUtils';
 
 export const useGameStore = defineStore('game', () => {
 	const currency = ref(0);
+	const income = ref(0);
 	const game = ref(null as Game | null);
 
 	const init = (initGame: Game) => {
@@ -17,6 +18,12 @@ export const useGameStore = defineStore('game', () => {
 	const incrementCurrency = (amount: number) => {
 		if (game.value?.isRunning) {
 			currency.value += amount;
+		}
+	};
+
+	const setIncome = (amount: number) => {
+		if (game.value?.isRunning) {
+			income.value = amount;
 		}
 	};
 
@@ -43,6 +50,8 @@ export const useGameStore = defineStore('game', () => {
 
 	return {
 		currency,
+		income,
+		setIncome,
 		init,
 		incrementCurrency,
 		saveGame,

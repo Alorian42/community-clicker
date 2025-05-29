@@ -1,6 +1,9 @@
 <template>
 	<div class="shop">
-		<div class="shop-header">Currency: {{ currency }}</div>
+		<div class="shop-header">
+			<div>Currency: {{ currency }}</div>
+			<div>Income: {{ income }}</div>
+		</div>
 		<div class="shop-items">
 			<!-- Shop items will be rendered here -->
 			<!-- Example item: -->
@@ -19,6 +22,7 @@ import { useShopStore } from '../stores/shop';
 
 const gameStore = useGameStore();
 const currency = computed(() => gameStore.currency.toFixed(0));
+const income = computed(() => gameStore.income.toFixed(0));
 const { buildings } = useShopStore();
 
 const buy = (item: (typeof buildings)[0]) => {
